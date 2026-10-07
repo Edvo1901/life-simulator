@@ -1,0 +1,20 @@
+---
+description: 'Apply when moving, renaming, replacing, consolidating, or deleting files, folders, components, functions, or imports'
+alwaysApply: false
+---
+
+# Refactor cleanup
+
+Canonical: `docs/Personal_Rules.md` section 3.
+
+A leftover is the old path of a file this change moved, or a file this change left with no caller. Delete leftovers in the same piece of work; do not move them to a trash folder.
+
+- Delete the old path and any folder the move left empty.
+- Update or remove imports pointing at the old path.
+- Delete a file whose last caller was removed in this change.
+- Leave files already unused before this change; do not expand the task into a repository-wide unused-file purge.
+- A missing import does not prove a file is unused. Routes, SQL scripts, wiki pages, tests, and configuration can be live without normal feature imports.
+- A hold is a file/folder the owner explicitly said to keep. Record holds and reasons in `docs/Assumptions.md`; ask and wait before deleting one. No company hold list is inherited.
+- Existing code is not automatically the target standard. Record routine choices in `Assumptions.md` and obtain agreement for architecture changes or exceptions.
+
+Example: moving `TaskCard.tsx` into its feature folder also deletes its old path and a helper whose final caller was removed, while updating all imports.

@@ -1,0 +1,26 @@
+---
+description: 'Controller-service-repository boundaries, DTO/entity separation, NestJS modules, and dependency injection'
+globs: 'backend/src/**/*.ts'
+alwaysApply: false
+---
+
+# Backend architecture
+
+Canonical: `docs/Personal_Rules.md` section 12.
+
+## Layer responsibilities
+
+- Controllers translate HTTP input/output only. They call services and contain no business decisions, TypeORM queries, or transaction logic.
+- Services own business rules, business-data authorization, workflow orchestration, and transaction boundaries.
+- Repositories own persistence. Controllers do not import TypeORM infrastructure.
+- Services do not import TypeORM Repository/query builders or execute queries. Only the approved transaction runner may be used to define boundaries; services do not query through its context.
+- Repository methods express application intent, such as `findActiveTaskById`. Do not expose unrestricted generic CRUD or query builders to higher layers.
+- Entities stay in persistence. Repositories return the data services need; controllers return response DTOs.
+
+## Modules and dependencies
+
+- Register each business feature through a NestJS module. Other features use exported services/contracts rather than its repositories/entities.
+- Use constructor injection through Nest providers; no manual construction of services/repositories or mutable global state.
+- Dependencies run controllers → services → repositories. Avoid circular modules; do not use `forwardRef()` as a routine solution. Correct the boundary or extract shared responsibility.
+
+- Life-simulator rules/calculations and confirmed save/load workflows belong in NestJS services; repositories own SQL Server access. Electron main/preload and React components do not become a second game-rules or persistence layer. Confirm game-time behaviour before implementing it; technical/audit timestamps remain Adelaide time.

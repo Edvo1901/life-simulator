@@ -1,0 +1,21 @@
+---
+description: 'Apply when creating or changing feature modules, registration, routes, tables, ID prefixes, or ID allocation'
+alwaysApply: false
+---
+
+# Modules and IDs
+
+Canonical: `docs/Personal_Rules.md` sections 2 and 6.
+
+- Use one module name for its feature folder, backend files, API route, and table prefix.
+- Routes: `frontend/src/app/(modules)/[module-name]/`. Feature components: `frontend/src/components/features/[module-name]/`.
+- Register route modules in `frontend/src/config/modules.ts` with `name`, `label`, `path`, `description`, and `icon`. Description supplies launcher card text; icon is a launcher key with a default fallback.
+- A shared feature folder may have no route and no registry entry. Reuse shared rules and project tables instead of duplicating them.
+- Keep one frontend, backend, shared app shell, and navigation system within this project.
+- Each project reserves its own ID prefixes in `docs/Database.md`. Do not inherit company prefixes.
+- Existing IDs stay unless the owner approves a migration. Continue allocation above the highest existing number.
+- IDs are `NVARCHAR(20)`: prefix, hyphen, digits; for example `TSK-00001`.
+- Ask the owner for lifetime capacity before selecting digits. Record prefix, separator, digits, capacity, and an example in `Database.md`.
+- Four digits cap at 9,999; five at 99,999; six at 999,999. Reject a four-digit design when volume can exceed 9,999.
+- Prefixes must not clash within the project. Update the project's reserved list when adding a prefix.
+- ID allocation has automated coverage, including the digit-count upper bound, and prevents duplicates.

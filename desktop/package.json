@@ -1,0 +1,33 @@
+{
+  "name": "life-simulator-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "engines": {
+    "node": "24.19.0"
+  },
+  "packageManager": "pnpm@12.6.0",
+  "scripts": {
+    "dev": "pnpm --dir ../backend build && pnpm build && electron .",
+    "start": "pnpm --dir ../frontend build && pnpm --dir ../backend build && pnpm build && electron . --production",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --ignore-path ../.prettierignore --write .",
+    "format:check": "prettier --ignore-path ../.prettierignore --check .",
+    "test": "jest --runInBand",
+    "test:smoke": "pnpm --dir ../backend build && pnpm build && electron . --smoke-test",
+    "setup": "install-electron"
+  },
+  "devDependencies": {
+    "electron": "44.6.0",
+    "typescript": "5.9.3",
+    "@types/node": "25.0.3",
+    "eslint": "9.39.5",
+    "typescript-eslint": "8.70.1",
+    "prettier": "3.9.9",
+    "jest": "30.5.2",
+    "ts-jest": "29.4.13",
+    "@types/jest": "30.0.0"
+  }
+}

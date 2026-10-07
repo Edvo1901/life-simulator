@@ -1,0 +1,21 @@
+---
+description: 'Accessible controls, forms, dialogs, status messages, and confirmed device/language layouts'
+globs: 'frontend/src/**/*.ts, frontend/src/**/*.tsx, frontend/src/**/*.css'
+alwaysApply: false
+---
+
+# Accessibility and supported devices
+
+Canonical: `docs/Personal_Rules.md` section 9.
+
+- Use semantic HTML and native controls where possible. Buttons perform actions; links navigate.
+- Every input has a visible label; associate instructions and validation errors programmatically with the field.
+- Forms, actions, menus, dialogs, and table controls work with a keyboard. Focus is visible and follows a logical order.
+- Modals move focus inside, trap it while open, close with Escape when safe, and return focus to their trigger.
+- Do not express status, errors, warnings, or required state through colour alone; include text or an accessible icon.
+- Approved palette combinations must meet WCAG 2.2 AA contrast. Do not add unapproved colours as a workaround.
+- Informative images have useful alternative text; decorative images have empty alternative text.
+- Tooltips work on keyboard focus and mouse hover.
+- Test every device type recorded in `docs/ProjectInfo.md`; no clipped content or unnecessary horizontal scrolling at confirmed sizes.
+- Reuse the project's accessible shared components without losing business behaviour.
+- For multilingual projects, test translated labels/messages, text expansion, and relevant text direction at confirmed device sizes.

@@ -1,0 +1,44 @@
+---
+description: 'Typed frontend API modules, feature hooks, one backend transport, and safe integration clients'
+globs: 'frontend/src/app/**, frontend/src/components/**, frontend/src/hooks/**, frontend/src/lib/api/**, frontend/src/lib/integrations/**, frontend/src/types/**, frontend/src/config/api.ts'
+alwaysApply: false
+---
+
+# Frontend API access
+
+Canonical: `docs/Personal_Rules.md` sections 7, 9, and 10.
+
+Project backend flow: `component → feature hook → typed API module → apiClient`.
+
+## Shared client
+
+- Shared transport: `frontend/src/lib/api/client.ts`. It owns base URL, configurable prefix, headers, JSON serialisation, parsing, timeouts, cancellation, `204 No Content`, and standard error conversion to typed `ApiError`.
+- Pages/components do not call `fetch` or axios. Components, pages, and hooks do not construct URLs or provide arbitrary endpoint strings. Never hard-code `/api/`.
+- Do not add per-module API clients. Only `apiClient` attaches authentication headers.
+- Authentication is shared within the project when required. Do not assume login or fixed auth file paths; follow the agreed project design.
+
+## Typed module functions and contracts
+
+- Module files: `frontend/src/lib/api/[module-name].ts`. They own endpoint paths and use typed request/response contracts.
+- A contract used only in one API file may stay there. Module-shared contracts live in `frontend/src/types/[module-name]/`; cross-module static contracts such as `PagedResponse<T>` and common API error payloads live in `frontend/src/types/common/api.d.ts`.
+- Import shared contracts rather than duplicating them. Declaration files export types and contain no runtime implementation.
+- Runtime `ApiError` lives in `frontend/src/lib/api/client.ts` or `frontend/src/lib/api/errors.ts`, never in a `.d.ts` file.
+- Return typed data or throw standard typed `ApiError`; do not manage React state, show notifications, or render messages.
+
+## Hooks
+
+- Generic internal primitives: `src/hooks/api/useApiQuery.ts` and `useApiMutation.ts`.
+- Typed business hooks live in `src/hooks/[module-name]/`, such as `useTasks`, `useCreateTask`, `useUpdateTask`, and `useDeleteTask`.
+- No unrestricted `useApi("/arbitrary/path")` exposed to components.
+- Hooks handle loading, errors, stale-request cancellation, and refetching; they do not render notifications or UI.
+- On a 409 `rowVer` conflict, reload the current record and expose typed conflict state/message for the component.
+- Server Components and non-React code call typed module functions directly.
+
+## Retry safety and integrations
+
+- Never automatically retry POST, PUT, PATCH, or DELETE unless the write is explicitly designed to be idempotent. Do not silently retry mutations.
+- Third-party clients live in `frontend/src/lib/integrations/[provider].ts`; components do not call them directly.
+- Each provider client owns its URL, timeout, parsing, and error conversion.
+- Do not send third-party requests through the backend client unless the backend intentionally proxies that service.
+
+Paged result: `{ items, total, page, pageSize }`. Standard error: `{ "error": { "code": "...", "message": "..." } }`.

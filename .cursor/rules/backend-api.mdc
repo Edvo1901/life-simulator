@@ -1,0 +1,47 @@
+---
+description: 'NestJS folders, DTOs, REST prefix, standard errors, paging, API evolution, concurrency, and deletes'
+globs: 'backend/**'
+alwaysApply: false
+---
+
+# Backend and API
+
+Canonical: `docs/Personal_Rules.md` sections 5, 10, 12, and 14.
+
+Backend is API code only; SQL scripts belong in `SQL-Table`. It serves the existing frontend in both browser and Electron modes; do not create a second game API or place game rules in the desktop host.
+
+Nest folders directly under `backend/src`: `controllers`, `services`, `repositories`, `models`, `types`, `dtos`, `exceptions`, `filters`, `interceptors`, `pipes`, `guards`, `auth`, `utils`, `config`, `Middleware`, `Validators`. Preserve exact case. Authentication files apply when login is required. `utils` includes `adelaideTime.ts`.
+
+Uncompiled folders beside `src`: `Docs`, `Logs`, `Temp`, `Assets`. Do not commit Logs/Temp contents. Backend Docs is not the root project documentation.
+
+- Controllers call services; business rules stay in services and TypeORM access stays in repositories. Follow `backend-architecture.mdc`.
+- Pick a consistent placement for custom validators, DTOs, and pipes based on responsibility and record it in `Assumptions.md`.
+- Feature modules use shared project authentication when required; do not add a second auth system.
+
+## Routes and contracts
+
+- Backend prefix comes from `API_PREFIX` via Nest `setGlobalPrefix`. Frontend reads `NEXT_PUBLIC_API_PREFIX` in `src/config/api.ts`; both initially `api` and must match.
+- Prefix changes such as `apiv1` or `apiv2` use those settings; never hard-code `/api/` in route strings.
+- REST route: `/[apiPrefix]/[module-name]/[resource]`, plural resources. JSON fields are camelCase.
+- Every body/query has a DTO in `src/dtos`, checked by global `ValidationPipe` with `whitelist: true` and `forbidNonWhitelisted: true`.
+- Separate request/response DTOs. Map approved fields into response DTOs; never return entities. Make optional, nullable, and omitted fields explicit.
+- Never pass request DTOs directly to generic persistence or spread unapproved fields into an entity.
+
+## Errors and lists
+
+- One global filter in `src/filters` returns `{ "error": { "code": "...", "message": "..." } }`.
+- Status: 200 read/update, 201 create, 204 delete, 400 invalid input, 404 missing, 409 concurrency/duplicate conflict, 500 unexpected. A 500 reveals neither stacks nor SQL.
+- Error codes are stable. Services throw domain exceptions mapped by the filter.
+- Log unexpected errors once at the application boundary with request ID and safe context. Expected 4xx outcomes are not unexpected server failures.
+- Lists take `page` from 1 and `pageSize` default 50, max 200; return `{ items, total, page, pageSize }`. Do not return an entire table.
+- Allow only documented filters/sorts; use deterministic order with record ID as tie-breaker.
+
+## Evolution, concurrency, and deletes
+
+- Prefer additive API changes. Removed/renamed fields, changed meanings, or routes need an agreed migration plan or new API version. Update catalogs with the compatibility decision.
+- Updates send loaded `rowVer`; repository update includes `WHERE row_ver = @rowVer`. Zero rows means 409 and nothing saved.
+- The feature hook reloads current data and exposes the conflict for the UI.
+- User deletes are soft: set `deleted_at`; lists/lookups exclude those rows.
+- Child rows replaced during parent save may be permanently removed. Other permanent deletes need a reason in `Assumptions.md` and owner approval before implementation.
+
+- Backend startup honours API_PORT from .env then .env.local, with shell values taking precedence. Preserve these loaders when changing dev/start scripts. Desktop-owned servers bind to loopback and use the configured frontend CORS origins.

@@ -1,0 +1,21 @@
+---
+description: 'Personal project scope, source of truth, essential safeguards, and required workflow'
+alwaysApply: true
+---
+
+# Personal project core
+
+- Current project rule-set version: 2.0. Match the version in `docs/Personal_Rules.md`.
+- Read `docs/Personal_Rules.md` as the canonical technical standard. If it is missing, report that and ask the owner for the guide rather than substituting another project's rules.
+- Life Simulator is the owner's personal local Windows desktop life simulator using text/images. Online publication is not planned. Use Electron, one Next.js frontend, one NestJS backend, TypeScript, TypeORM, and Microsoft SQL Server; preserve the guide's pinned versions. The current implementation includes the Electron host, localization, and authentication/account-management source; gameplay remains pending; English/Vietnamese resources and username/password user/admin authentication are confirmed. Read internationalization.mdc and config-security.mdc for their design.
+- The guide wins over scaffolds, tutorials, and existing code. Departures need the owner's agreement and a recorded reason.
+- Follow the owner's requested phase. A request for review, planning, or questions does not authorise implementation.
+- Before coding, read the root `docs` and relevant existing wiki pages. Apply `project-workflow.mdc` for discovery, requirements, and completion checks.
+- Read `desktop-electron.mdc` for Electron/window/server-lifecycle work. Use local Node.js/pnpm installations; do not reintroduce a project-local package-manager bootstrap or wrapper without owner agreement.
+- Apply relevant scoped rules. For module/ID work, file moves or refactors, and multilingual work, also consult `modules-and-ids.mdc`, `refactor-cleanup.mdc`, and `internationalization.mdc` respectively.
+- This project requires English/Vietnamese localization and local username/password login. Keep text in root language/en and language/vn; do not introduce an identity provider or deployment platform.
+- Make routine implementation decisions within the guide and record assumptions. Ask about unclear requirements, scope changes, architecture exceptions, and explicitly required approvals. Reuse decisions already confirmed for this project.
+- Read existing feature wiki pages before changes and update them afterwards. The requested language/authentication pages are authorized; ask before unrelated pages.
+- Never expose secrets or sensitive data in code, prompts, logs, documentation, examples, fixtures, client bundles, or error responses.
+- Only commit, push, publish releases, or deploy when authorised by the owner; wiki files are included in the main repository under the same authorisation.
+- Changes to this guide or agent instructions must follow `personal-rules-sync.mdc`.

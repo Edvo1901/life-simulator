@@ -1,0 +1,62 @@
+---
+description: 'Environment settings, optional project authentication, secret protection, logging, and backend security'
+globs: '**/.env*, frontend/src/config/**, backend/src/**/*.ts, frontend/package.json, backend/package.json, desktop/package.json, desktop/src/**/*.ts'
+alwaysApply: false
+---
+
+# Configuration and security
+
+Canonical: `docs/Personal_Rules.md` section 14.
+
+- Settings live in ignored `.env`/`.env.local`; commit `.env.example` with placeholders only. Frontend reads `PORT` from `.env.local` before Next.js chooses its port. Backend and Electron read backend `.env` followed by `.env.local`; shell values take precedence. Do not ignore the local override file or overwrite it. Never commit secrets/connection strings or place secrets in `NEXT_PUBLIC_*`.
+- Structured backend logs carry request/correlation ID. Log safe operations, status, duration, and error codes rather than full payloads.
+- Never log secrets, tokens, personal/sensitive information, complete bodies, or upload contents. Redact sensitive fields.
+- CORS uses an environment allowlist; no credentialed wildcard origin.
+- Apply framework-supported security headers and explicit body limits. Added packages are pinned/documented.
+- Validate upload type, extension, and size on the backend; generate filenames, prevent traversal, and keep private files outside the public web root.
+- Protected operations enforce identity/permissions on the backend. Hidden routes and disabled controls are not authorization.
+- Required audit history records actor, action, affected record, outcome, and Adelaide timestamp without secrets/unnecessary sensitive values.
+- Use risk-based limits for authentication, public, and high-risk endpoints; do not break legitimate batches with an arbitrary blanket limit.
+- Audit production dependencies before merge. Resolve high/critical findings or document mitigation and explicit owner acceptance.
+- Follow `backend-reliability.mdc` for outbound timeouts, safe retries, health checks when deployed, and graceful shutdown.
+
+## Standard variables
+
+| Variable                                              | Use                                                                                      |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `DB_HOST` `DB_PORT` `DB_NAME` `DB_USER` `DB_PASSWORD` | SQL Server                                                                               |
+| `PORT`                                                | Frontend listen port, loaded before Next.js startup                                      |
+| `API_PORT`                                            | Backend listen port                                                                      |
+| `NEXT_DIST_DIR`                                       | Optional project-specific Next.js cache/output directory; desktop dev uses .next-desktop |
+| `API_PREFIX`                                          | Backend global prefix                                                                    |
+| `NEXT_PUBLIC_API_PREFIX`                              | Frontend prefix; initially api, matching backend                                         |
+| `NEXT_PUBLIC_API_BASE_URL`                            | Backend URL used by frontend                                                             |
+| `CORS_ORIGINS`                                        | Accepted frontend origins                                                                |
+| `MAX_REQUEST_BODY_BYTES`                              | Non-file body limit                                                                      |
+| `MAX_UPLOAD_BYTES`                                    | Upload limit when supported                                                              |
+| `AUTH_LOCAL_TOKEN_SECRET`                             | Only for an agreed local-token design                                                    |
+| `AUTH_BOOTSTRAP_USERNAME` `AUTH_BOOTSTRAP_PASSWORD`   | Optional one-time administrator bootstrap for an agreed local-login design               |
+
+New variables go in matching `.env.example` and project documentation; add them to the guide if they become a shared standard. Provider-specific variables are documented only when the provider is confirmed.
+
+## Authentication
+
+- Owner specifies login, eligible users, roles, and permissions in `docs/ProjectInfo.md`.
+- No login requirement means no auth system. Do not assume an identity provider.
+- When required, agree on the approach and implement authentication during project development; do not defer it to a future integration.
+- Modules use one shared implementation. Add only auth tables required by that design in schema `auth`.
+- Pin/document added packages and provider variables. Test valid identity, unauthenticated access, permission checks, and denied operations.
+
+## Local desktop configuration
+
+- Honour configured `PORT`/`API_PORT`, for example 3005/4005. The fallback 3000/4000 applies only when unset. Validate range, distinct ports, and availability; do not kill/reuse unrelated servers or silently change the owner's ports.
+- Reuse `frontend/src/config/startNext.mts`; programmatic env loading avoids unsupported Node env-file flags in Next dev-worker NODE_OPTIONS.
+- Bind desktop-owned services to loopback and add the actual frontend origins to the child backend CORS allowlist while preserving existing allowed origins. Keep frontend backend URL/prefix aligned when adding API access.
+- Backend credentials belong only in backend local settings and backend processes, never renderer/preload/IPC/NEXT_PUBLIC values. The Electron main process resolves configuration but never connects to SQL Server.
+- Follow `desktop-electron.mdc` for renderer sandboxing, context isolation, permissions, navigation, optional native bridges, and owned-process shutdown. Local-only use does not waive these boundaries.
+
+## Confirmed local login
+
+- Username/password self-registration uses bcrypt 6.0.0, minimum eight characters, case-sensitive SQL uniqueness, and a server-assigned user role. Public registration cannot select admin.
+- Backend checks protect management APIs; transactions preserve the last active admin. Updates carry rowVer; deletes are soft. Initial admin creation is an explicit local command, never an HTTP bootstrap endpoint.
+- Session state is memory-only in the frontend and login is required after app close. Never store credentials/tokens in persistent browser storage or translation resources.

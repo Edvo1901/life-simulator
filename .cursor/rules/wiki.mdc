@@ -1,0 +1,16 @@
+---
+description: 'Technical feature documentation in the ordinary wiki folder tracked with application source'
+globs: 'desktop/src/**, frontend/src/**, backend/src/**, SQL-Table/**, language/**, docs/**, wiki/**'
+alwaysApply: false
+---
+
+# Project wiki
+
+Canonical: docs/Personal_Rules.md sections 1, 17, and 18.
+
+- wiki/ is an ordinary folder in the main Git repository. No separate remote, nested Git repository, .gitmodules entry, or submodule pointer is required.
+- Read existing feature pages before changes and update them alongside source, schema, API, dependency, or rule changes. One page per substantial feature; use sections for important functions, paths, data, callers, contracts, permissions, tests, and limitations.
+- The owner authorized this folder and the localization/authentication pages (README.md, Internationalization.md, Authentication.md, API-Docs.md). Do not ask again for them. Ask before unrelated new pages unless authorized.
+- API changes update wiki/API-Docs.md, docs/ApiEndpoints.md, and docs/Project.postman_collection.json together. Use configurable prefixes and synthetic examples; no secrets, environment values, connection strings, or live records.
+- Root docs is the requirements/review summary; wiki pages contain technical implementation details. Distinguish plans from actual behavior.
+- When authorized to commit/push, include wiki and application changes in the same main-repository operation. Do not initialize Git, commit, push, or publish merely because documentation was requested.

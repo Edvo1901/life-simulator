@@ -1,0 +1,21 @@
+---
+description: 'Keep the endpoint summary, wiki API catalog, and project Postman collection aligned with API changes'
+globs: 'backend/src/controllers/**, backend/src/services/**, backend/src/repositories/**, backend/src/models/**, backend/src/dtos/**, backend/src/main.ts, frontend/src/config/api.ts, frontend/src/lib/api/**, wiki/API-Docs.md, docs/ApiEndpoints.md, docs/Project.postman_collection.json'
+alwaysApply: false
+---
+
+# API catalog
+
+Canonical: `docs/Personal_Rules.md` sections 1, 10, and 18.
+
+When an endpoint is added, changed, or removed, update in the same piece of work:
+
+- `docs/ApiEndpoints.md`: endpoint summary, using the configurable prefix.
+- `wiki/API-Docs.md`: purpose, method, path, query/body, status codes, and one sample JSON result.
+- `docs/Project.postman_collection.json`: the same callable contract.
+
+- Document migration/version decisions for incompatible API changes.
+- Postman `baseUrl` is host plus API prefix, default `http://127.0.0.1:4000/api`; do not add the prefix twice in request paths.
+- Use example data only; no secrets, connection strings, credentials, or live database rows.
+- Feature wiki pages explain implementation; the API wiki gives the calling contract. Do not create competing catalogs.
+- The API page for the requested authentication work is authorized. Ask before unrelated new feature pages.

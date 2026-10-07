@@ -1,0 +1,20 @@
+---
+description: 'Keep the personal guide and applicable agent instructions aligned when rules change'
+globs: 'docs/Personal_Rules.md, .cursor/rules/**, AGENTS.md, CLAUDE.md'
+alwaysApply: false
+---
+
+# Personal rules synchronisation
+
+Canonical: `docs/Personal_Rules.md` sections 1 and 20.
+
+- When a rule is added, changed, or removed, update the matching Cursor rules in the same piece of work. Do not leave stale instructions enforcing an old requirement.
+- One concern per `.mdc`. Update an existing concern where possible; create a separate rule for a new concern. Remove or shrink rules when their requirements are removed.
+- Keep `project-core.mdc` concise and always applied. Use file patterns for file-specific rules and precise task descriptions for workflow rules.
+- Keep the actual personal-guide path in references and file patterns consistent: `docs/Personal_Rules.md`.
+- When the guide version changes, update the version in `project-core.mdc` and applicable version references.
+- Keep existing root `AGENTS.md` and `CLAUDE.md` references consistent when those files are within the authorised scope. Do not create additional tool templates during a Cursor-only task; report follow-up synchronisation needed outside that scope.
+- Do not invent technical standards from existing code. Record routine choices in `docs/Assumptions.md`; obtain owner agreement for changes to the standard.
+- Increment the major rules version for changes requiring rework of a compliant project; increment the minor version for additions or clarifications. Update the review date after reviewing the complete guide.
+- For substantial rule changes, retain the guide's validation requirement: the same fictional request and rules, fresh folders, at least two supported coding agents, equal information, scored outcomes, and recorded failures/decisions. Do not claim this validation has run when it has not.
+- A reusable template update does not authorise editing other project repositories. Install and synchronise each project's rules deliberately.

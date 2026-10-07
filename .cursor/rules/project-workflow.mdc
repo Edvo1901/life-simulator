@@ -1,0 +1,49 @@
+---
+description: 'Apply to project setup, requirements discovery, feature planning, implementation review, and completion checks'
+alwaysApply: false
+---
+
+# Personal project workflow
+
+Canonical: `docs/Personal_Rules.md` sections 1, 2, 18, and 19.
+
+## Before implementation
+
+- Read the root `docs` and the feature's existing wiki page.
+- Reuse the confirmed local Windows desktop-game scope and Electron/Next.js/NestJS/SQL Server decisions in `docs/ProjectInfo.md`. Do not ask the owner to select that stack again or treat earlier game-design suggestions as approved scope.
+- For new gameplay requirements, confirm purpose, users and roles, current and desired workflows, rules, approvals, statuses, exceptions, supported devices, success criteria, scope, languages, integrations, and authentication with the owner.
+- Separate must-have, optional, future, and out-of-scope work. Record simulations, demo limitations, open questions, and requirement changes.
+- Ask about missing requirements before dependent implementation. Routine technical choices within the guide may be recorded in `Assumptions.md`; material assumptions and exceptions require review.
+- This project requires username/password login and English/Vietnamese localization. Reuse confirmed decisions; no deployment is added.
+
+## Required root documentation
+
+| File                     | Required content                                                                                                                                                                                          |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/ProjectInfo.md`    | Personal Rules version, purpose, users/devices, workflows, scope, success criteria, limitations, integrations, languages/default language, authentication, open questions, and requirement change history |
+| `docs/ApiEndpoints.md`   | Endpoint summary using the configurable API prefix                                                                                                                                                        |
+| `docs/PagesAndRoutes.md` | Routes, screens, shared components, and confirmed language selection/locale routing                                                                                                                       |
+| `docs/Database.md`       | Tables, relationships, constraints, ID prefixes/digits/capacities/examples, and schema snapshot version                                                                                                   |
+| `docs/Dependencies.md`   | Additional libraries, pinned versions, and reasons                                                                                                                                                        |
+| `docs/Assumptions.md`    | Technical choices, reasons, and required owner approvals                                                                                                                                                  |
+
+Keep these documents accurate as the code changes. Root `docs` is not `backend/Docs`.
+
+## Completion
+
+Use the full section 18 checklist for new modules and relevant changes. At minimum:
+
+- Confirm stack, folders, module registry, shared UI, API boundaries, naming, palette/font, and formatting follow the guide.
+- Run `pnpm lint`, `pnpm format:check`, and `pnpm test` in frontend, backend, and desktop; report failures or unavailable checks accurately.
+- Confirm ID capacity, paging, standard errors, `rowVer`, DTO/entity boundaries, transactions, constraints, duplicate protection, and safe SQL scripts.
+- Update the single schema snapshot with schema changes. Store database timestamps through `adelaideTime.ts`.
+- Confirm database-driven options, required device accessibility, languages, login, and permissions.
+- Confirm meaningful service, repository integration, HTTP, frontend, regression, and critical end-to-end coverage.
+- Review secrets, logs, security, external timeouts/retries, lifecycle, and any deployment-specific checks.
+- Remove leftovers created by this change and preserve owner-designated holds.
+- Update component/controller headers, feature wiki, API catalog, endpoint summary, Postman collection, and any affected agent instructions.
+- Keep `ProjectInfo.md` accurate, review material assumptions, and provide a short README explaining how to run the project.
+- Do not mark protected operations complete while required authentication is missing, or claim unrun tests and pending validations passed.
+
+- Desktop/runtime changes also follow desktop-electron.mdc: verify real rendering, env precedence, configured/free ports, process ownership, and shutdown. Report database connection, schema/admin setup, gameplay, and installer packaging separately; mark each pending until implemented and verified.
+- Instruction-only edits require version/path/pin/metadata consistency and Markdown checks; application execution and two-agent rule validation must not be inferred from those checks.

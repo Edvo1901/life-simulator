@@ -1,0 +1,49 @@
+---
+description: 'Next.js App Router folders, shared UI, purple theme, typography, formats, and screen behaviour'
+globs: 'frontend/src/**, frontend/public/**, frontend/next.config.*, frontend/postcss.config.*'
+alwaysApply: false
+---
+
+# Frontend
+
+Canonical: `docs/Personal_Rules.md` sections 2, 5, 9, and 11.
+
+Use the existing Next.js frontend in both the browser and Electron renderer; do not duplicate it for desktop. Use App Router; no `pages` folder. No top-level `store`, `context`, `providers`, or `services` unless the guide is updated with owner agreement.
+
+| Folder                                  | Contains                                                      |
+| --------------------------------------- | ------------------------------------------------------------- |
+| `src/app`                               | Routes only: layout, page, loading, error                     |
+| `src/components/ui`                     | Shared Button, Input, Modal, Dropdown, Table                  |
+| `src/components/layout`                 | Header, sidebar, page header, app launcher                    |
+| `src/components/features/[module-name]` | Feature UI; a shared feature folder may have no route         |
+| `src/hooks/api`                         | Generic internal query/mutation primitives                    |
+| `src/hooks/[module-name]`               | Typed feature hooks                                           |
+| `src/lib`                               | Shared clients and setup                                      |
+| `src/lib/api/client.ts`                 | Shared backend transport                                      |
+| `src/lib/api/[module-name].ts`          | Typed module API functions                                    |
+| `src/lib/integrations/[provider].ts`    | Dedicated third-party clients                                 |
+| `src/utils`                             | Pure date/ID/formatting helpers; no React or HTTP calls       |
+| `src/types`                             | Shared/global exported declarations; one-off types stay local |
+| `src/constants`                         | Fixed constants, not dropdown or selection values             |
+| `src/styles`                            | Global CSS and Tailwind theme colours                         |
+| `src/config`                            | API prefix and module registry                                |
+| `public`                                | Static files served as-is                                     |
+
+- Pages compose components; keep tables, forms, and lists out of `page.tsx`.
+- Reuse shared UI; feature screens do not belong in `components/ui`.
+- Tests sit beside the file they cover; no central `Tests` folder.
+- Backend data access follows `frontend-api-client.mdc`; components do not make HTTP calls.
+- Use Tailwind theme tokens such as `bg-pine`; no raw hex values in components.
+- Preserve the purple palette: paper `#F7F6FB`, paperDark `#EFEDF7`, ink `#201E3D`, inkSoft `#6B6890`, pine `#383568`, pineDark `#26244A`, soil `#5B57A0`, gold `#8B87C4`, rule `#E1DFF0`, ruleDark `#C7C3E1`, card `#FFFFFF`, danger `#B23B3B`.
+- Button roles: primary pine, secondary soil, confirm green `#2E7A4F`, cancel/reject danger. Follow the guide's complete button, hover, outline, destructive, and disabled tables. Disabled buttons do not change on hover.
+- Font: `'IBM Plex Sans', sans-serif`. A required language-specific fallback needs documented owner agreement.
+- Format through shared `src/utils`, not inline: default `en-AU`, dates `DD/MM/YYYY`, datetime `DD/MM/YYYY HH:mm` in Adelaide time, AUD with two decimals, thousands separators, and weight followed by its unit.
+- Display-locale exceptions are project requirements; stored timestamps remain Adelaide time. Apply `internationalization.mdc` when languages are confirmed.
+- Every page has title, subtitle, and actions. Lists have loading, empty, and error states.
+- Deletes use an in-app confirm dialog; no `window.confirm` or `window.alert`.
+- Tooltips explain non-obvious modules/features/actions and appear on focus and hover. Do not add them for obvious Delete, Apply, Agree, or Cancel actions.
+- Dropdowns, selections, radio options, filters, categories, statuses, types, and units come from the database; hard-coded values are limited to tests/sample data.
+- Choose an options-table shape fitting its columns and record the choice in `Assumptions.md`. Do not add an options admin page unless confirmed scope requires it.
+
+- Frontend PORT comes from .env.local before Next.js starts; preserve src/config/startNext.mts. Electron dev sets NEXT_DIST_DIR=.next-desktop, while ordinary web/production builds use .next. Treat both as generated caches and exclude them from source lint/format scanning.
+- The renderer displays text/images and submits choices through the established typed backend client flow; SQL access and game rules stay in NestJS. Native Electron window menus do not replace the shared React UI.

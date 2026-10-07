@@ -1,0 +1,40 @@
+---
+description: 'Naming, shared types, component/controller headers, comments, linting, and formatting'
+globs: 'desktop/src/**/*.ts, frontend/src/**/*.mts, desktop/*.config.*, frontend/src/**/*.ts, frontend/src/**/*.tsx, frontend/src/**/*.js, frontend/src/**/*.jsx, backend/src/**/*.ts, backend/src/**/*.tsx, backend/src/**/*.js, backend/src/**/*.jsx, frontend/*.config.js, frontend/*.config.mjs, frontend/*.config.ts, backend/*.config.js, backend/*.config.mjs, backend/*.config.ts'
+alwaysApply: false
+---
+
+# Naming and code style
+
+Canonical: `docs/Personal_Rules.md` sections 7, 8, and 16.
+
+| Item                  | Style                | Example                    |
+| --------------------- | -------------------- | -------------------------- |
+| Component files       | PascalCase           | `TaskCard.tsx`             |
+| Utility files         | camelCase            | `formatDate.ts`            |
+| Backend files         | Nest dot-separated   | `tasks.controller.ts`      |
+| Type files            | [name].d.ts in types | `task.d.ts`                |
+| Tables/columns        | snake_case           | `task_items`, `created_at` |
+| Environment variables | UPPER_SNAKE_CASE     | `DB_HOST`                  |
+
+- `frontend/src/types`, `backend/src/types`, and `desktop/src/types` hold shared/global types only. Props and one-off types stay in their consuming file.
+- Feature-shared declarations live in `types/[module-name]/[name].d.ts`; cross-feature declarations in `types/common/[name].d.ts`.
+- Each declaration file exports its types as a module. Import shared types; do not redeclare them.
+- Classes stay where they belong: DTOs in `dtos`, entities in `models`.
+- Frontend common static API contracts use `frontend/src/types/common/api.d.ts`; module-shared contracts use the feature type folder. Runtime `ApiError` belongs in `lib/api/client.ts` or `lib/api/errors.ts`, never a declaration file.
+- Every component/controller starts with a block explaining purpose, responsibilities, usage, and its feature wiki page.
+- Comment important functions/features and non-obvious behaviour, not trivial formatters or assignments.
+- ESLint and Prettier check the code. One root Prettier configuration; frontend `eslint-config-next`, backend/desktop `typescript-eslint`, each with `eslint.config.mjs`.
+- Lint and formatting must pass before merge. Disabled rules need reviewable reasons; no blanket top-of-file disable.
+
+Example header:
+
+```tsx
+/**
+ * Task summary card for the task list.
+ * Renders title and status; used by TaskList.
+ * Wiki: wiki/TaskBoard.md
+ */
+```
+
+- Desktop runtime source is TypeScript compiled from desktop/src to desktop/dist. Node frontend entry points may use .mts. Keep build/test configs in their established tool-supported formats; do not edit compiled output.

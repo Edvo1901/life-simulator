@@ -1,0 +1,31 @@
+---
+description: 'Transactions, duplicate prevention, external request safety, health checks, and graceful shutdown'
+globs: 'backend/src/**/*.ts, backend/package.json'
+alwaysApply: false
+---
+
+# Backend reliability
+
+Canonical: `docs/Personal_Rules.md` sections 10, 13, 14, and 21.
+
+## Transactions
+
+- A service defines one business operation's transaction through the approved runner. Participating repositories use the same context; the service does not query through it.
+- No independent nested transactions for parts of one operation. A required write failure rolls back the entire operation.
+- Do not catch errors inside a transaction and continue with partial data. Translate errors after rollback.
+- Do not hold transactions open during external calls, user input, or long-running file processing.
+
+## Duplicate prevention
+
+- Repeated create, import, webhook, approval, and batch requests must not create duplicate effects.
+- Business-key unique constraints are final protection. Where replay is expected, document an idempotency key and store it with the business write in the same transaction.
+- Same key/payload returns the original result; same key/different payload returns 409.
+
+## External calls and lifecycle
+
+- Every outbound HTTP call has an explicit timeout. Validate/normalise responses before business code uses them and redact sensitive request/response logs.
+- Retry only safe-to-repeat operations, with bounded attempts, backoff, and jitter. Never retry inside a database transaction.
+- Non-idempotent external writes are not automatically retried without an agreed duplicate-protection design.
+- When production deployment is introduced, expose lightweight process health and required-dependency readiness checks without secrets/infrastructure details.
+- Enable NestJS shutdown hooks; stop accepting new work and close database/background resources cleanly.
+- Do not add hosting infrastructure just to satisfy production-only checks in a local practice project.

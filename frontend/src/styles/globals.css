@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+@theme inline {
+  --font-sans: var(--font-ibm-plex-sans), sans-serif;
+  --color-paper: #f7f6fb;
+  --color-paperDark: #efedf7;
+  --color-ink: #201e3d;
+  --color-inkSoft: #6b6890;
+  --color-pine: #383568;
+  --color-pineDark: #26244a;
+  --color-soil: #5b57a0;
+  --color-gold: #8b87c4;
+  --color-rule: #e1dff0;
+  --color-ruleDark: #c7c3e1;
+  --color-card: #ffffff;
+  --color-danger: #b23b3b;
+}

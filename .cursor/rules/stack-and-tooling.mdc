@@ -1,0 +1,56 @@
+---
+description: 'Pinned TypeScript stack, pnpm, linting, formatting, and documented dependencies'
+globs: 'frontend/package.json, backend/package.json, desktop/package.json, **/pnpm-lock.yaml, .nvmrc, **/.npmrc, .prettierrc, **/eslint.config.*, **/tsconfig*.json, frontend/jest.config.*, backend/jest.config.*, desktop/jest.config.*, desktop/tsconfig*.json, desktop/eslint.config.mjs, **/pnpm-workspace.yaml'
+alwaysApply: false
+---
+
+# Stack and tooling
+
+Canonical: `docs/Personal_Rules.md` sections 4 and 8. TypeScript for frontend, backend, and Electron host source; use the exact versions below.
+
+| Area                           | Technology                   | Version |
+| ------------------------------ | ---------------------------- | ------- |
+| Runtime                        | Node.js                      | 24.19.0 |
+| Package manager                | pnpm                         | 12.6.0  |
+| Desktop host                   | Electron                     | 44.6.0  |
+| Frontend                       | Next.js                      | 16.1.1  |
+| Frontend                       | React                        | 19.2.3  |
+| Frontend                       | react-dom                    | 19.2.3  |
+| Frontend                       | axios                        | 1.11.0  |
+| Frontend styling               | Tailwind CSS                 | 4.1.18  |
+| Frontend styling               | @tailwindcss/postcss         | 4.1.18  |
+| Frontend, backend, and desktop | TypeScript                   | 5.9.3   |
+| Frontend, backend, and desktop | @types/node                  | 25.0.3  |
+| Frontend                       | @types/react                 | 19.2.7  |
+| Frontend                       | @types/react-dom             | 19.2.3  |
+| Backend                        | NestJS                       | 12.0.4  |
+| Backend                        | @nestjs/typeorm              | 12.0.1  |
+| Backend                        | typeorm                      | 1.1.1   |
+| Backend                        | mssql                        | 12.7.2  |
+| Backend validation             | class-validator              | 0.15.1  |
+| Backend validation             | class-transformer            | 0.5.1   |
+| Testing                        | jest                         | 30.5.2  |
+| Testing                        | ts-jest                      | 29.4.13 |
+| Testing                        | @types/jest                  | 30.0.0  |
+| Linting                        | eslint                       | 9.39.5  |
+| Linting                        | typescript-eslint            | 8.70.1  |
+| Linting (frontend)             | eslint-config-next           | 16.1.1  |
+| Formatting                     | prettier                     | 3.9.9   |
+| Database                       | Microsoft SQL Server (T-SQL) | —       |
+
+- Root `.nvmrc`: `24.19.0`. Frontend/backend/desktop package files: `"engines": { "node": "24.19.0" }` and `"packageManager": "pnpm@12.6.0"`.
+- pnpm only; not npm, yarn, or bun. Maintain frontend/backend/desktop `pnpm-lock.yaml` and include them when commits are authorised, not `package-lock.json`.
+- `frontend/.npmrc`, `backend/.npmrc`, and `desktop/.npmrc`: `save-exact=true`. Pin package versions without range operators.
+- New projects and imported feature code match the table. Convert incompatible lock files and align versions before accepting imported code.
+- Do not replace the fixed frameworks, API library, styling, ORM, or database without owner agreement. Additional libraries are pinned and recorded in `docs/Dependencies.md` with reasons; material additions need owner approval.
+- Keep ESLint on 9.x until relevant plugins are checked for compatibility with 10; obtain agreement and update the guide before changing that standard.
+- Frontend uses `eslint-config-next`; backend and desktop use `typescript-eslint`. Each has `eslint.config.mjs`.
+- One root `.prettierrc` serves all three packages. Imported code uses it; remove duplicate formatting configurations.
+- Run lint and formatting checks before merging. A disabled lint rule needs a recorded reason; no blanket file-level `eslint-disable`.
+
+- Electron supplies its own embedded runtime; local Next.js/NestJS servers and tooling use installed Node.js 24.19.0. Check actual executable/version resolution before changing tooling. Use installed pnpm 12.6.0 directly; do not recreate .tools/bootstrap scripts/pnpm wrappers without owner agreement.
+- Electron is approved for the desktop host, not as a replacement frontend/backend. See desktop-electron.mdc. Pin/document additional packages and allow only identified dependency build scripts.
+
+## Approved localization/auth additions
+
+- i18next 26.4.2, react-i18next 17.0.16, bcrypt 6.0.0, and @types/bcrypt 6.0.0 are approved translation/password dependencies. jest-environment-jsdom 30.5.2 supports frontend DOM tests. Pin/document all; no online provider or second auth framework.

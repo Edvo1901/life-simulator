@@ -1,0 +1,39 @@
+---
+description: 'Electron Windows desktop host, local Next.js/NestJS lifecycle, env/port precedence, renderer isolation, and smoke verification'
+globs: 'desktop/**, frontend/src/config/startNext.mts, frontend/next.config.*, frontend/.env.example, backend/.env.example, backend/package.json'
+alwaysApply: false
+---
+
+# Electron desktop host
+
+Canonical: `docs/Personal_Rules.md` sections 2, 4, 5, 14, 15, and 22.
+
+## Approved scope and architecture
+
+- This is the owner's personal local Windows text/image life simulator and learning project. Use Electron 44.6.0 around the existing Next.js 16.1.1 frontend and NestJS 12.0.4 backend. No online publication is planned; installer/updater/cross-platform support is future scope requiring confirmation.
+- `desktop/src/main.ts` owns application/window/menu lifecycle; `config.ts` resolves local settings; `localServers.ts` owns local child servers. TypeScript source compiles to `desktop/dist`; declarations are in `desktop/src/types/common`, and tests are colocated.
+- Do not duplicate the frontend/backend or move simulation rules, save/load operations, or TypeORM/SQL access into Electron/preload/React. Use the existing typed HTTP client flow and NestJS service/repository boundaries.
+- Microsoft SQL Server remains the selected persistence backend. Authentication uses backend SQL-auth settings and a prepared schema; target execution/admin setup is pending. Never expose backend credentials to the renderer.
+
+## Tooling and startup
+
+- Use installed Node.js 24.19.0 for local servers and pnpm 12.6.0. Electron has its own embedded runtime. Verify actual PATH/executable resolution; do not add a project-local pnpm download/wrapper without owner agreement.
+- Host setup: `pnpm --dir desktop install --frozen-lockfile`, then `pnpm --dir desktop setup`. Allow only identified dependency build-script versions.
+- `pnpm --dir desktop dev` builds backend/host and runs Next.js dev. Frontend hot-reloads; restart for backend/host edits. `start` builds all packages and runs the local production frontend. Neither command builds an installer.
+- Resolve frontend PORT from `.env.local`; resolve backend API_PORT from `.env` then `.env.local`. Shell values take precedence. Respect configured ports, validate range/distinctness, and reject occupied ports; defaults 3000/4000 apply only when unset.
+- Keep desktop-owned servers on loopback. Add actual frontend origins to child backend CORS while retaining configured entries. Do not rewrite owner env files, weaken CORS, or silently use another running server. Preserve the frontend URL/prefix settings when introducing API integration.
+- Reuse `frontend/src/config/startNext.mts`; do not forward Node env-file flags into Next dev-worker NODE_OPTIONS. Desktop dev uses `.next-desktop`; normal web/production builds use `.next`. Both caches are generated/ignored and excluded from source scanning.
+
+## Lifecycle and renderer security
+
+- Wait for readiness with bounded timeouts; handle spawn, child exit, and startup failures with safe actionable errors. Do not display raw env/SQL/secret-bearing exception text.
+- Stop only the processes this host started, including descendant workers, on quit/failure. Never kill by process name or stop unrelated apps. Port conflict does not authorise terminating its owner.
+- Keep nodeIntegration disabled, contextIsolation/sandbox enabled, navigation limited to the intended frontend origin, new windows blocked, and unused permissions denied. Never disable web security to make the demo work.
+- The authorized language-only bridge validates code, sender/main-frame identity, and local origin. Further confirmed native operations use narrow typed APIs with validated payloads and sender/origin checks; do not expose filesystem/process primitives or database access to the renderer.
+
+## Verification and future work
+
+- Run host lint, formatting, type checks, tests, and build for relevant changes. Test local env precedence, validation/conflicts, backend-setting separation, readiness/failure, and cleanup.
+- Run `pnpm --dir desktop test:smoke` for desktop/runtime changes. Use free isolated ports, preserve owner env files/unrelated servers, load a real renderer, check isolation, and verify released owned ports. Screenshot output is ignored under `desktop/coverage`.
+- Keep source-folder demo prerequisites explicit. A future installer needs an agreed plan for Node servers, SQL Server, local settings/secrets, assets/data, backups, and uninstall behaviour. No automatic publishing, cloud telemetry, or required online gameplay services.
+- Current Electron/font downloads need build-time network access; do not claim a fresh build is fully offline. Maintain the authorized wiki folder with source changes.

@@ -1,0 +1,56 @@
+---
+description: 'SQL Server schema, Adelaide timestamps, constraints, transactions, numbered scripts, and project snapshot'
+globs: 'SQL-Table/**, backend/src/repositories/**, backend/src/models/**, backend/src/config/**, backend/src/utils/adelaideTime.ts, **/*.sql'
+alwaysApply: false
+---
+
+# Database and SQL
+
+Canonical: `docs/Personal_Rules.md` sections 6, 10, and 13.
+
+Microsoft SQL Server/T-SQL is owner-confirmed for this local desktop game. Do not substitute SQLite, browser storage, or JSON files as its persistence backend without agreement. Database access stays in NestJS repositories; Electron/renderer/preload have no direct SQL access. The SQL-auth connection/settings and prepared auth scripts are documented in docs/Database.md. Capacity is 10,000 accounts and the snapshot is schema_v1.sql; apply only to an authorized verified target.
+
+Microsoft SQL Server/T-SQL only. Business tables use `dbo`; snake_case table/column names. Parameterised queries only; never concatenate SQL. Multi-table writes run in a transaction.
+
+When required by confirmed login requirements, auth tables use schema `auth`, for example users, roles, permissions, user_roles, role_permissions, and audit_events. Create only those required by the agreed design. Qualify auth relations/queries with their schema; no inherited provider-specific tables.
+
+Every table has `created_at`, `updated_at` as `DATETIMEOFFSET(0)`, and `row_ver ROWVERSION`. User-deletable tables also have `deleted_at DATETIMEOFFSET(0) NULL`.
+
+## Integrity, transactions, and performance
+
+- Define foreign keys and delete behaviour; no accidental cascade. Enforce business keys with unique constraints and reliable simple invariants with check constraints.
+- Index important joins, filters, ordering, and foreign keys where justified; no duplicate/speculative indexes.
+- Services own transaction boundaries through the approved runner; every participating repository uses the same context. Roll back all required writes on failure.
+- No independent nested transactions, continuing after transaction errors, or external calls/long processing inside transactions.
+- Select only required columns/relations. Prevent N+1 queries with joins/batching.
+- Deterministic paging includes record ID as tie-breaker. Document and validate limits for filters, sorts, imports, exports, and batch writes.
+- Investigate queries/indexes before caching. Document cache owner, expiry, invalidation, and reason.
+- Keep `docs/Database.md` accurate for tables, relationships, constraints, and ID capacity.
+
+## Adelaide time
+
+- Every stored timestamp is `Australia/Adelaide`; do not store UTC or use `SYSUTCDATETIME()`/`GETUTCDATE()`.
+- `DATETIMEOFFSET` preserves +09:30/+10:30 offsets and distinguishes the DST repeated hour; `DATETIME2` does not.
+- All timestamps use `backend/src/utils/adelaideTime.ts`, explicitly converting to Adelaide independent of server timezone.
+- TypeORM mssql sets `options.useUTC: false`. Imported features reuse the project helper.
+
+## Numbered scripts
+
+- SQL lives only in `SQL-Table`; no competing backend schema file.
+- TypeORM `synchronize: false` and `migrationsRun: false`.
+- New scripts: `NNNN_[module-name]_[description].sql`, in number order with referenced tables first.
+- Never edit scripts already run against a shared database. Add a new script. Track which database each script ran against.
+- Seeds: `NNNN_[module-name]_seed_[description].sql`, test/dev only.
+- New scripts follow the highest existing number. Assign imported, unapplied scripts new numbers preserving order; do not renumber already-applied shared scripts.
+- Check expected starting state and fail clearly on mismatch. Use transactions when SQL Server safely supports the entire change.
+- Destructive changes, renames, narrowing types, and new non-null requirements need reviewed preservation/recovery plans. Stage add/backfill/switch/remove when needed.
+
+## Snapshot and files
+
+- Exactly one `SQL-Table/schema_v*.sql` current-state snapshot. Owner chooses its versioned filename; agents do not rename/change its version. If there are two, ask the owner.
+- Each schema-changing numbered script also updates snapshot contents in the same work. Snapshot on an empty database equals all scripts in order.
+- Snapshot contents are the sole exception to never editing an applied script; applied numbered scripts remain immutable.
+- Include required reference rows; no test/sample seeds. Auth reference rows apply only when that design requires them.
+- Existing noncompliant timestamp/soft-delete tables change through reviewed numbered scripts, never through snapshot edits alone.
+- Review `Database.md` against scripts and snapshot. Features reuse existing schema where appropriate.
+- Files/images live in agreed storage, referenced by the table; no data URLs or large text uploads in SQL. Document storage/access/cleanup in `Assumptions.md` and the feature wiki.

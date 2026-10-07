@@ -1,0 +1,18 @@
+---
+description: 'English/Vietnamese localization, root language resources, i18next, switching, fallback, and translated native/frontend text'
+globs: 'language/**, frontend/src/**, desktop/src/**, backend/src/filters/**, docs/**, wiki/Internationalization.md'
+alwaysApply: false
+---
+
+# Application languages
+
+Canonical: docs/Personal_Rules.md sections 2, 9, 18, and 23.
+
+- Required languages: en (English, default/fallback) and vn (owner-requested Vietnamese folder/code). Map vn to standard HTML vi / Intl vi-VN. Existing routes have no locale prefixes.
+- Put all application-authored user-facing text in root language/en and language/vn JSON namespace files. Use semantic translation keys, matching shapes/placeholders/plurals, interpolation rather than concatenated sentences, and no raw HTML from translations.
+- Register languages in language/languages.json. Adding a folder and registry entry must not require rewriting components. This static supported-language registry is the explicit section 11 exception; business options/roles stay database-driven.
+- Use i18next 26.4.2 and react-i18next 17.0.16 with bundled local resources. Shared frontend setup: src/lib/i18n.ts; provider/selector: components/layout. Preserve established folders and Server Component boundaries.
+- Offer a keyboard-accessible selector before and after login. Persist language preference only; never login tokens/passwords. Unknown preferences and missing translated keys fall back to English. Keep SSR/initial hydration consistent and avoid shared mutable server language state.
+- Switching keeps route/form state, updates document language/title, and localizes text, metadata, validation/errors, labels, dialogs, tooltips, module descriptions, and application-owned Electron menus/dialogs. Map stable API codes to resources; never show raw backend exceptions.
+- Stable role codes and API/module/database identifiers are not translated. Preserve en-AU/AUD display defaults and Adelaide timestamp storage. Include Vietnamese glyphs in IBM Plex Sans.
+- Test switching, persisted/unknown preference, English fallback, namespace/key and interpolation parity, both desktop layouts, and native text. Document adding a language in wiki/Internationalization.md.

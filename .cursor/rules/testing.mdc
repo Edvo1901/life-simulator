@@ -1,0 +1,28 @@
+---
+description: 'Colocated tests for business rules, failures, SQL repositories, HTTP contracts, regressions, and critical workflows'
+globs: 'desktop/src/**/*.ts, frontend/src/**/*.mts, **/*.test.ts, **/*.test.tsx, **/*.test.js, **/*.test.jsx, **/*.spec.ts, **/*.spec.tsx, **/*.spec.js, **/*.spec.jsx, backend/src/**/*.ts, frontend/src/**/*.ts, frontend/src/**/*.tsx'
+alwaysApply: false
+---
+
+# Testing
+
+Canonical: `docs/Personal_Rules.md` section 15.
+
+Jest; backend/desktop use `ts-jest`, frontend uses `next/jest`. Tests sit beside their source; no central `Tests` folder. Examples: `tasks.service.spec.ts` beside `tasks.service.ts`, `TaskCard.test.tsx` beside `TaskCard.tsx`.
+
+- Every service writing data, allocating IDs, or creating Adelaide timestamps has tests. ID allocation includes the digit-count upper bound.
+- Unit-test service business rules without HTTP or a real database.
+- Integration-test repositories, constraints, queries, and transactions against an isolated SQL Server database with the relevant production schema. Mocked repositories do not prove SQL correctness.
+- HTTP tests cover controllers, validation, pipes, guards, permissions, global exception filter, status codes, and response shapes.
+- Cover important rules, calculations, validation failures, approvals, status transitions, permissions, and exceptions in `docs/ProjectInfo.md`.
+- Cover invalid input, standard errors, transaction rollback, duplicate prevention/idempotency, and `rowVer` conflicts where relevant.
+- Important frontend forms/data views cover loading, empty, validation-error, request-error, and success states.
+- Every defect fix includes a regression that fails without the fix.
+- Each module has at least one automated end-to-end test of its most important workflow. Pin/document added test libraries.
+- Map critical tests to project success criteria, not merely implementation details.
+- When multilingual support is confirmed, test languages, switching, fallback, translated states, and relevant layouts. When login is required, cover identity and denied operations.
+- `pnpm test` passes in frontend, backend, and desktop. Tests use isolated data and never production databases.
+- Report unavailable environments or unrun checks honestly; do not claim mocked tests replace required SQL Server integration coverage.
+
+- Desktop/runtime changes follow desktop-electron.mdc: test env-file/shell precedence, ports, backend-setting separation, real renderer isolation, readiness/failure, and owned-process cleanup. The Electron smoke check must release its server ports and preserve owner env files/unrelated servers.
+- Runtime screenshots and earlier app tests do not establish Cursor activation or two-agent validation of a changed rule set. Instruction-only edits require consistency/Markdown checks rather than invented application-test evidence.

@@ -1,0 +1,12 @@
+[
+  {
+    "code": "en",
+    "label": "English",
+    "htmlTag": "en"
+  },
+  {
+    "code": "vn",
+    "label": "Tiếng Việt",
+    "htmlTag": "vi"
+  }
+]

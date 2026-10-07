@@ -1,0 +1,51 @@
+---
+description: 'GitHub releases and conditional deployment planning, settings checks, backups, and rollback'
+globs: 'desktop/package.json, desktop/packaging/**, .github/workflows/**, deploy/**, frontend/package.json, backend/package.json, frontend/.env.example, backend/.env.example, wiki/Deployment.md, wiki/Release-Process.md'
+alwaysApply: false
+---
+
+# Releases and deployment
+
+Canonical: `docs/Personal_Rules.md` section 21.
+
+Life Simulator is a personal local Windows desktop project; online publication is not planned. Git setup remains pending; wiki is a regular main-repository folder. Local Electron dev/start is neither online deployment nor installer packaging. No cloud host, updater, telemetry, publication pipeline, or installer is added without a separate confirmed requirement.
+
+## Versions and releases
+
+- Frontend/backend/desktop package versions match. SemVer; `0.x.y` while experimental/beta, published as pre-releases; `1.0.0` is first stable.
+- Tag `vX.Y.Z`; package version `X.Y.Z`.
+- Release through GitHub Releases only when requested, from the documented agreed default branch; do not assume `master`.
+- Version bump and release changes reach that branch first.
+- Never reuse, move, or delete published tags; correct mistakes with the next version.
+- Introduce release procedure/template in `wiki/Release-Process.md` following new-page approval.
+- No secrets, connection strings, private infrastructure details, or .env values in release notes.
+- Footer reads version from frontend package.json; no other hard-coded version.
+
+## Before introducing deployment
+
+- Obtain agreement on target, environments, process, settings, database changes, backups, recovery, health checks, and costs before provisioning or adding a pipeline.
+- Document the agreed process in `wiki/Deployment.md` and affected agent instructions.
+- GitHub Actions is optional and requires agreement; do not add a workflow merely because this rule exists.
+
+## When deployment is agreed
+
+- Build from a clean checkout with correct Git-tracked path/import case.
+- Pass lint, formatting, tests, settings checks, and builds before replacing/stopping running code.
+- Workflow steps propagate failures; no later successful command hiding an earlier failure.
+- Deploy unattended and stop/replace only this application's resources; never kill all node.exe processes.
+- Preserve the previous working version and provide health-checked rollback, or the managed platform's documented equivalent.
+- Production has safe process health and dependency readiness checks.
+
+## Settings and database
+
+- Production settings live in agreed hosting/secret storage and are preserved during deployment; never commit them or copy developer env files into production.
+- Backend settings hold secrets. NEXT_PUBLIC values are public and compiled into browser bundles.
+- Required variables are uncommented placeholder lines in matching `.env.example`; optional ones are commented. Add them with consuming code.
+- Check required variable names without printing values; stop on missing settings before changing the running app.
+- Document frontend build-time settings and backend start-time settings.
+- SQL uses numbered `SQL-Table` scripts. Do not run SQL silently during deployment; agree/document environment, timing, data preservation, and recovery before dependent deployment.
+- Track applied scripts per database.
+
+Changes to the agreed workflow, scripts, hosting, or procedure require owner agreement and same-work updates to deployment documentation and applicable agent rules.
+
+- Future local installer packaging follows guide section 22: agree how local servers, SQL Server availability, settings, data/assets, backups, and uninstall behaviour are handled. Keep current source-folder demo limitations explicit; do not claim it runs on a clean machine without prerequisites.
